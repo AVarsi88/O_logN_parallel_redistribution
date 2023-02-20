@@ -1,14 +1,16 @@
 import numpy as np
 from mpi4py import MPI
-from rotational_nearly_sort import rot_nearly_sort
-from rotational_split import rot_split
+from discretesampling.base.algorithms.smc_components.util import pad, restore
+from discretesampling.base.algorithms.smc_components.variable_size_redistribution.rotational_nearly_sort import rot_nearly_sort
+from discretesampling.base.algorithms.smc_components.variable_size_redistribution.rotational_split import rot_split
 
 
 def sequential_redistribution(x, ncopies):
     return np.repeat(x, ncopies, axis=0)
 
 
-def redistribute(x, ncopies):
+def redistribute(particles, ncopies):
+    x = pad(particles)
 
     if MPI.COMM_WORLD.Get_size() > 1:
         x, ncopies = rot_nearly_sort(x, ncopies)
@@ -16,13 +18,17 @@ def redistribute(x, ncopies):
 
     x = sequential_redistribution(x, ncopies)
 
-    return x
+    restore(x, particles)
+
+    return particles
 
 
-def centralised_redistribution(x, ncopies):
+def centralised_redistribution(particles, ncopies):
     comm = MPI.COMM_WORLD
     N = len(ncopies) * comm.Get_size()
     rank = comm.Get_rank()
+
+    x = pad(particles)
 
     all_ncopies = np.zeros(N, dtype=ncopies.dtype)
     all_x = np.zeros([N, x.shape[1]], dtype=x.dtype)
@@ -37,5 +43,7 @@ def centralised_redistribution(x, ncopies):
 
     comm.Scatter(sendbuf=[all_x, x_MPI_dtype], recvbuf=[x, x_MPI_dtype], root=0)
 
-    return x
+    restore(x, particles)
+
+    return particles
 
