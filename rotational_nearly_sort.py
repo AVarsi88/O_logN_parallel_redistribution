@@ -58,16 +58,14 @@ def rot_nearly_sort(x, ncopies):
 
     x, ncopies, zeros = sequential_nearly_sort(x, ncopies)
 
-    if P == 1:
-        return x, ncopies
-
     shifts = np.zeros_like(zeros)
-    comm.Exscan(sendbuf=[zeros, MPI.INT], recvbuf=[shifts, MPI.INT], op=MPI.SUM)
+    shifts_MPI_dtpe = MPI._typedict[zeros.dtype.char]
+    comm.Exscan(sendbuf=[zeros, shifts_MPI_dtpe], recvbuf=[shifts, shifts_MPI_dtpe], op=MPI.SUM)
 
     # Compute the MSB to check (top) and the LSB to check (down)
     down = max(loc_n, 1)
     max_shifts = np.zeros_like(shifts)
-    comm.Allreduce(sendbuf=[shifts if rank == P-1 else np.array(0), MPI.INT], recvbuf=[max_shifts, MPI.INT], op=MPI.SUM)
+    comm.Allreduce(sendbuf=[shifts if rank == P-1 else np.array(0), shifts_MPI_dtpe], recvbuf=[max_shifts, shifts_MPI_dtpe], op=MPI.SUM)
     top = 1 if max_shifts == 0 else 1 << int(log2(max_shifts))  # to fix math domain error on for loop, when top is 0
 
     if loc_n > 1:

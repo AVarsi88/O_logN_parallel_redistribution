@@ -30,13 +30,16 @@ def rotate(ncopies, x, starter, send_partner, recv_partner):
     temp_ncopies = np.zeros_like(ncopies)
     temp_x = np.zeros_like(x)
     temp_starter = np.zeros_like(starter)
+    ncopies_MPI_dtype = MPI._typedict[ncopies.dtype.char]
+    x_MPI_dtype = MPI._typedict[x.dtype.char]
+    starter_MPI_dtype = MPI._typedict[starter.dtype.char]
 
-    comm.Sendrecv(sendbuf=[ncopies, MPI.INT], dest=send_partner, sendtag=0,
-                  recvbuf=[temp_ncopies, MPI.INT], source=recv_partner, recvtag=0)
-    comm.Sendrecv(sendbuf=[x, MPI.DOUBLE], dest=send_partner, sendtag=0,
-                  recvbuf=[temp_x, MPI.DOUBLE], source=recv_partner, recvtag=0)
-    comm.Sendrecv(sendbuf=[starter, MPI.INT], dest=send_partner, sendtag=0,
-                  recvbuf=[temp_starter, MPI.INT], source=recv_partner, recvtag=0)
+    comm.Sendrecv(sendbuf=[ncopies, ncopies_MPI_dtype], dest=send_partner, sendtag=0,
+                  recvbuf=[temp_ncopies, ncopies_MPI_dtype], source=recv_partner, recvtag=0)
+    comm.Sendrecv(sendbuf=[x, x_MPI_dtype], dest=send_partner, sendtag=0,
+                  recvbuf=[temp_x, x_MPI_dtype], source=recv_partner, recvtag=0)
+    comm.Sendrecv(sendbuf=[starter, starter_MPI_dtype], dest=send_partner, sendtag=0,
+                  recvbuf=[temp_starter, starter_MPI_dtype], source=recv_partner, recvtag=0)
 
     return temp_ncopies, temp_x, temp_starter
 
@@ -115,7 +118,8 @@ def rot_split(x, ncopies):
     down = max(loc_n, 1)  # loc_n if loc_n > 1 else 1
     max_bit = np.max((ncopies > 0)*(csum - np.array(range(loc_n)) - base))
     top = np.zeros_like(max_bit)
-    comm.Allreduce(sendbuf=[max_bit, MPI.INT], recvbuf=[top, MPI.INT], op=MPI.MAX)
+    max_bit_MPI_dtype = MPI._typedict[max_bit.dtype.char]
+    comm.Allreduce(sendbuf=[max_bit, max_bit_MPI_dtype], recvbuf=[top, max_bit_MPI_dtype], op=MPI.MAX)
     top = top >> 1 if (top & (~top + 1)) == top else 1 << int(log2(top))  # top & (~top + 1) is the MSB
     top = max(top, 1)  # to fix math domain error on the next line, when the previous returns 0
 
