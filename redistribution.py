@@ -1,5 +1,9 @@
 import numpy as np
 from mpi4py import MPI
+import os
+import sys
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(ROOT_DIR)
 from rotational_nearly_sort import rot_nearly_sort
 from rotational_split import rot_split
 

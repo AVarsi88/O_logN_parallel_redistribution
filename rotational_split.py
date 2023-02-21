@@ -1,6 +1,10 @@
 import numpy as np
 from math import log2
 from mpi4py import MPI
+import os
+import sys
+path = os.getcwd()
+sys.path.append(os.path.abspath(os.path.join(path, os.pardir)))
 from prefix_sum import inclusive_prefix_sum
 
 
