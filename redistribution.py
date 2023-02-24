@@ -1,6 +1,6 @@
 import numpy as np
 from mpi4py import MPI
-from discretesampling.base.algorithms.smc_components.util import pad, restore
+from discretesampling.domain.decision_tree.util import pad, restore
 from discretesampling.base.algorithms.smc_components.variable_size_redistribution.rotational_nearly_sort import rot_nearly_sort
 from discretesampling.base.algorithms.smc_components.variable_size_redistribution.rotational_split import rot_split
 
@@ -18,7 +18,7 @@ def redistribute(particles, ncopies):
 
     x = sequential_redistribution(x, ncopies)
 
-    restore(x, particles)
+    particles = restore(x, particles)
 
     return particles
 
