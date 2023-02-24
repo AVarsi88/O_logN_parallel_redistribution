@@ -43,7 +43,7 @@ def centralised_redistribution(particles, ncopies):
 
     comm.Scatter(sendbuf=[all_x, x_MPI_dtype], recvbuf=[x, x_MPI_dtype], root=0)
 
-    restore(x, particles)
+    particles = restore(x, particles)
 
     return particles
 
