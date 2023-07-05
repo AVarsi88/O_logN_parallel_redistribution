@@ -2,7 +2,7 @@ import numpy as np
 from math import log2
 from mpi4py import MPI
 
-from smccomponents.systematic_resampling.mpi.rotational_split import rotate, accept
+from smccomponents.resample.systematic.mpi.rotational_split import rotate, accept
 
 
 def sequential_nearly_sort(x, ncopies):

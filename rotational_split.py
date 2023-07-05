@@ -1,7 +1,7 @@
 import numpy as np
 from math import log2
 from mpi4py import MPI
-from smccomponents.systematic_resampling.mpi.prefix_sum import inclusive_prefix_sum
+from smccomponents.resample.systematic.mpi.prefix_sum import inclusive_prefix_sum
 
 
 def divide(ncopies, x, csum, starter, and_bit):  # and_bit in Algorithm 4 of [1] is called N2^{-k}

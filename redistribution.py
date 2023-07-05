@@ -1,7 +1,7 @@
 import numpy as np
 from mpi4py import MPI
-from smccomponents.systematic_resampling.mpi.rotational_nearly_sort import rot_nearly_sort
-from smccomponents.systematic_resampling.mpi.rotational_split import rot_split
+from smccomponents.resample.systematic.mpi.rotational_nearly_sort import rot_nearly_sort
+from smccomponents.resample.systematic.mpi.rotational_split import rot_split
 
 
 def sequential_redistribution(x, ncopies):
