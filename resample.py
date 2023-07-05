@@ -68,7 +68,7 @@ def check_stability(ncopies, N, N_local, comm):
     return ncopies
 
 
-def resample(x, wn, logw, N, N_local, comm, log_likelihood=None):
+def resample(x, wn, N, N_local, comm, log_likelihood=None):
     """
     Resample the particles.
 
