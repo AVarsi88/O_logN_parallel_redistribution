@@ -14,7 +14,7 @@ Parallel systematic resampling from [1].
 """
 
 
-def get_ncopies(wn, N, comm):
+def get_ncopies(wn, N, comm, rng=None):
     """
     Determine the number of copies of each particle.
 
@@ -29,7 +29,10 @@ def get_ncopies(wn, N, comm):
     # Calculate the cdf of wn
     cdf = inclusive_prefix_sum(wn * N)
 
-    u = np.random.uniform()
+    if rng:
+        u = rng.uniform_rvs()
+    else:
+        u = np.random.uniform()
     u = comm.bcast(u, root=0)
 
     cdf_of_i_minus_one = cdf - (wn * N)
@@ -68,7 +71,7 @@ def check_stability(ncopies, N, N_local, comm):
     return ncopies
 
 
-def resample(x, wn, N, N_local, comm, log_likelihood=None):
+def resample(x, wn, N, N_local, comm, log_likelihood=None, rng=None):
     """
     Resample the particles.
 
@@ -86,7 +89,7 @@ def resample(x, wn, N, N_local, comm, log_likelihood=None):
     """
 
     # Resample x
-    ncopies = get_ncopies(wn, N, comm)
+    ncopies = get_ncopies(wn, N, comm, rng)
 
     # Check stability of ncopies
     ncopies = check_stability(ncopies, N, N_local, comm)
