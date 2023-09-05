@@ -31,5 +31,6 @@ def inclusive_prefix_logsumexp(array):
     MPI_dtype = MPI._typedict[array.dtype.char]
 
     comm.Exscan(sendbuf=[leaf_node, MPI_dtype], recvbuf=[offset, MPI_dtype], op=op)
+    op.Free()
 
     return np.logaddexp(logcsum, offset)
